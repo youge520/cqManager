@@ -8,11 +8,16 @@ const upload = multer({ dest: 'views/imgs/' })
 
 const path = require('path')
 
+var bodyParser = require('body-parser')
+ 
+
 //实例化服务器
 const app = express();
 
 //托管静态资源
 app.use(express.static('views'));
+
+app.use(bodyParser.urlencoded({ extended: false }))
 
 // 路由1 英雄列表 带分页  到查询
 app.get('/heroList',(req,res) => {
@@ -130,6 +135,30 @@ app.get('/heroDelete',(req,res) => {
             msg: '删除成功',
             code: 200
         })
+    })
+})
+
+//路由 6 登录页面
+app.post('/register',(req,res) => {
+    //查询
+    dbHelper.find('userlist',{
+        username: req.body.username
+    }, result => {
+        //判断
+        if(result === 0){
+            //可以注册，保存
+            dbHelper.updateOne('userlist',req.body , result => {
+                req.send({
+                    msg: '恭喜你注册成功',
+                    code: 200
+                })
+            })
+        }else{
+            req.send({
+                msg: '该账号已被注册，重新注册吧',
+                code: 400
+            })
+        }
     })
 })
 
