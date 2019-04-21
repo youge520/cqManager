@@ -112,7 +112,7 @@
                       </div>
                     </div>
                     <button type="submit" class="btn btn-success">查找</button>
-                    <a href="#" class="btn btn-warning">新增</a>
+                    <a href="./add.html" class="btn btn-warning">新增</a>
                   </form>
                 </div>
                 <div class="col-md-3">
@@ -166,3 +166,115 @@
 <script src="./lib/bootstrap/js/jquery-1.12.4.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <script src="./lib/bootstrap/js/bootstrap.min.js"></script>
+<script src="./lib/js/template-web.js"></script>
+<!-- 创建模板 -->
+<script id="cq" type="text/html">
+  {{ each list }}
+  <tr>
+      <td>{{ $value.heroName }}</td>
+      <td>{{ $value.skillName }}</td>
+      <td><img src="{{ $value.heroIcon }}" alt="" /></td>
+      <td data-id="{{ $value._id }}">
+        <button class="btn btn-success btn-edit">编辑🍞</button>
+
+        <button class="btn btn-danger btn-delete">删除👍</button>
+      </td>
+    </tr>
+    {{ /each }}
+
+</script>
+
+<script>
+  $(function () {
+    //页码
+    let pagenum = 1;
+    // 页容量
+    const pagesize = 10;
+    //总页数
+    let totalPage;
+    let query = $('input[name=search]').val();
+    function getData() {
+      $.ajax({
+      url: 'heroList',
+      data: {
+        pagenum,
+        pagesize,
+        query
+      },
+      success: backData => {
+        // console.log(backData);
+       totalPage= backData.totalPage;
+        //获取模板
+        const html = template('cq',backData);
+        //渲染到页面
+        $('tbody').html(html);
+        //渲染页码
+        $('.page-num a').text(pagenum + '/' + totalPage);
+      }
+    })
+
+    }
+    //默认调用一次
+    getData();
+    // 上一页
+    $('.pagination li:first').click(function() {
+      if(pagenum<=1){
+        pagenum = totalPage;
+      }
+      pagenum--
+      getData()
+    })
+
+    // 下一页
+    $('.pagination li:last').click(function() {
+      if(pagenum >= totalPage){
+        pagenum = 0;
+      }
+      pagenum++
+      getData()
+    })
+
+    // 搜索
+    $('input[name=search]').keyup(function(event) {
+      if (event.keyCode === 13) {
+        query = $(this).val()
+        getData()
+      }
+    })
+    $('button.btn-success').click(function(event) {
+      query = $('input[name=search]').val()
+      getData()
+      // 阻止默认行为
+      event.preventDefault()
+    })
+
+    //去详情页面
+    $('tbody').on('click','button.btn-edit',function (){
+      //获取它父元素的data-id
+      const id = $(this).parent().data('id');
+      //去详情页面
+      window.location.href = './edit.html?id=' + id;
+    })
+
+    //删除数据
+    $('tbody').on('click','button.btn-delete',function (){
+      if(confirm('你忍心删掉我吗')){
+        const id = $(this).parent().data('id');
+        $.ajax({
+          url: '/heroDelete',
+          data: {
+            id
+          },
+          success: backData => {
+            alert('再见');
+            //删除成功就从新加载页面
+            getData();
+          }
+        })
+      }else{
+        alert('谢谢，爱你呦');
+      }
+    })
+
+  })
+</script>

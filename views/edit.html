@@ -83,6 +83,8 @@
             </div>
             <div class="panel-body">
               <form action="#" method="" class="form-horizontal">
+                <!-- 隐藏一个input -->
+                <input type="hidden" name="id">
                 <div class="form-group">
                   <label for="heroName" class="col-sm-2 control-label"
                     >姓名</label
@@ -105,8 +107,8 @@
                       required
                       type="text"
                       class="form-control"
-                      id="skill"
-                      name="skill"
+                      id="skillName"
+                      name="skillName"
                       placeholder="请输入技能"
                     />
                   </div>
@@ -118,14 +120,14 @@
                       required
                       type="file"
                       class="form-control"
-                      id="icon"
-                      name="icon"
+                      id="heroIcon"
+                      name="heroIcon"
                     />
                   </div>
                 </div>
                 <div class="form-group">
                   <div class="col-sm-offset-2 col-sm-10">
-                    <button type="submit" class="btn btn-default">保存</button>
+                    <button type="submit" class="btn btn-default btn-save">保存</button>
                     <button type="submit" class="btn btn-cancel">取消</button>
                   </div>
                 </div>
@@ -138,8 +140,62 @@
   </body>
 </html>
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="/bootstrap/js/jquery-1.12.4.js"></script>
+<script src="./lib/js/jquery-1.12.4.js"></script>
 <!--
   Include all compiled plugins (below), or include individual files as needed
 -->
-<script src="/bootstrap/js/bootstrap.min.js"></script>
+<script src="./lib/bootstrap/js/bootstrap.min.js"></script>
+
+<script>
+  $(function (){
+    //获取url中的id
+    const id = window.location.search.split('=')[1];
+    console.log(id);
+    //获取详细信息
+    $.ajax({
+      url: '/heroDetail',
+      data: {
+        id
+      },
+      success: backData => {
+        console.log(backData);
+        
+        $('form #heroName').val(backData.heroName);
+        $('form #skillName').val(backData.skillName);
+        //id也有保存进去
+        $('input[name=id]').val(backData._id);
+
+      }
+    })
+
+    //点击保存
+    $('.btn-save').click(function (){
+      const formData = new FormData($('form')[0]);
+      $.ajax({
+        url: '/heroUpdate',
+        type: 'post',
+        data: formData,
+        contentType:false,
+        processData:false,
+        success: backData => {
+          console.log(backData);
+          
+          alert(backData.msg);
+          setTimeout(() => {
+            window.location.href = './index.html';
+          })
+        }
+      })
+      return false;
+    })
+
+    //点击取消
+    $('.btn-cancel').click(function (){
+      //直接跳转回主页
+      window,location.href = './index.html';
+    })
+    
+  })
+
+
+</script>
