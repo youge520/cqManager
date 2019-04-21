@@ -23,6 +23,7 @@ app.get('/heroList',(req,res) => {
     const query = req.query.query;
     //获取所有数据
     dbHelper.find('cqlist', {} , result => {
+        result = result.reverse();
         //检索出符合查询条件的数据
         const temArr = result.filter(v => {
             if(v.heroName.indexOf(query) != -1 || v.skillName.indexOf(query) != -1){
@@ -96,14 +97,20 @@ app.post('/heroUpdate', upload.single('heroIcon'), (req,res) => {
     const id = req.body.id;
     const heroName = req.body.heroName;
     const skillName = req.body.skillName;
-    // 图片本地地址 托管静态资源的时候 views已经设置 访问时不需要
-    const heroIcon = path.join('imgs',req.file.filename);
-    //保存到数据库中
-    dbHelper.updateOne('cqlist',{_id: dbHelper.ObjectId(id)},{
+    //修改的数据
+    let updataData = {
         heroName,
-        heroIcon,
         skillName
-    }, result => {
+    }
+    //判断是否有图片
+    if(req.file){
+        // 图片本地地址 托管静态资源的时候 views已经设置 访问时不需要
+        const heroIcon = path.join('imgs',req.file.filename);
+        updataData.heroIcon = heroIcon;
+    }
+    // res.send(req.file)
+    //保存到数据库中
+    dbHelper.updateOne('cqlist',{_id: dbHelper.ObjectId(id)},updataData, result => {
         res.send({
             msg: '修改成功',
             code: 200

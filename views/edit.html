@@ -29,6 +29,10 @@
         text-decoration: none;
         color: yellowgreen;
       }
+      .preview{
+        width: 100px;
+        height: 100px;
+      }
     </style>
   </head>
 
@@ -123,6 +127,8 @@
                       id="heroIcon"
                       name="heroIcon"
                     />
+                    <!-- 预览图片的位置 -->
+                    <img src="" class="preview" alt="">
                   </div>
                 </div>
                 <div class="form-group">
@@ -165,6 +171,8 @@
         //id也有保存进去
         $('input[name=id]').val(backData._id);
 
+        $('.preview').attr('src',backData.heroIcon);
+
       }
     })
 
@@ -187,6 +195,13 @@
         }
       })
       return false;
+    })
+
+    //图片预览
+    $('#heroIcon').change(function(event){
+      console.log(event.target.files[0]);
+      const url = URL.createObjectURL(event.target.files[0]);
+      $('.preview').attr('src',url);
     })
 
     //点击取消

@@ -227,7 +227,7 @@
 
     // 下一页
     $('.pagination li:last').click(function() {
-      if(pagenum >= totalPage){
+      if(pagenum >= totalPage-1){
         pagenum = 0;
       }
       pagenum++
@@ -235,17 +235,26 @@
     })
 
     // 搜索
-    $('input[name=search]').keyup(function(event) {
-      if (event.keyCode === 13) {
-        query = $(this).val()
-        getData()
-      }
-    })
-    $('button.btn-success').click(function(event) {
-      query = $('input[name=search]').val()
-      getData()
+    // $('input[name=search]').keyup(function(event) {
+    //   if (event.keyCode === 13) {
+    //     query = $(this).val()
+    //     pagenum = 1;
+    //     getData()
+    //   }
+    // })
+    // $('button.btn-success').click(function(event) {
+    //   query = $('input[name=search]').val()
+    //   pagenum = 1;
+    //   getData()
+    //   // 阻止默认行为
+    //   event.preventDefault()
+    // })
+    $('form').submit(function(event) {
+      query = $('input[name=search]').val();
+      pagenum = 1;
+      getData();
       // 阻止默认行为
-      event.preventDefault()
+      event.preventDefault();
     })
 
     //去详情页面
