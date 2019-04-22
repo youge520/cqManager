@@ -145,7 +145,7 @@ app.post('/register',(req,res) => {
         username: req.body.username
     }, result => {
         //判断
-        if(result === 0){
+        if(result.length === 0){
             //可以注册，保存
             dbHelper.updateOne('userlist',req.body , result => {
                 req.send({
